@@ -1,0 +1,23 @@
+package ru.wqkcpf.launcher;
+
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+public final class App {
+    private App() {
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ignored) {
+                // Если системная тема недоступна, Swing сам поставит стандартную.
+            }
+
+            SettingsStore store = new SettingsStore();
+            LauncherFrame frame = new LauncherFrame(store);
+            frame.setVisible(true);
+        });
+    }
+}

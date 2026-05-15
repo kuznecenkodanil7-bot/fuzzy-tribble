@@ -1,0 +1,61 @@
+package ru.wqkcpf.launcher;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
+public final class SettingsStore {
+    private final Path settingsPath;
+
+    public SettingsStore() {
+        this.settingsPath = Path.of(
+                System.getProperty("user.home"),
+                ".wqkcpf-laby-style-launcher",
+                "settings.properties"
+        );
+    }
+
+    public LauncherSettings load() {
+        LauncherSettings settings = new LauncherSettings();
+
+        if (!Files.exists(settingsPath)) {
+            return settings;
+        }
+
+        Properties properties = new Properties();
+        try (InputStream inputStream = Files.newInputStream(settingsPath)) {
+            properties.load(inputStream);
+            settings.setUsername(properties.getProperty("username"));
+            settings.setJavaPath(properties.getProperty("javaPath"));
+            settings.setClientJarPath(properties.getProperty("clientJarPath"));
+            settings.setGameDirectory(properties.getProperty("gameDirectory"));
+            settings.setRamMb(properties.getProperty("ramMb"));
+            settings.setServerIp(properties.getProperty("serverIp"));
+            settings.setExtraArgs(properties.getProperty("extraArgs"));
+        } catch (IOException ignored) {
+            // При ошибке чтения возвращаем настройки по умолчанию.
+        }
+
+        return settings;
+    }
+
+    public void save(LauncherSettings settings) throws IOException {
+        Files.createDirectories(settingsPath.getParent());
+
+        Properties properties = new Properties();
+        properties.setProperty("username", settings.getUsername());
+        properties.setProperty("javaPath", settings.getJavaPath());
+        properties.setProperty("clientJarPath", settings.getClientJarPath());
+        properties.setProperty("gameDirectory", settings.getGameDirectory());
+        properties.setProperty("ramMb", settings.getRamMb());
+        properties.setProperty("serverIp", settings.getServerIp());
+        properties.setProperty("extraArgs", settings.getExtraArgs());
+
+        try (OutputStream outputStream = Files.newOutputStream(settingsPath)) {
+            properties.store(outputStream, "Wqkcpf LabyMod Style Launcher settings");
+        }
+    }
+}

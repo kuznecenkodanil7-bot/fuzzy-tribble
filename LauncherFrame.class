@@ -1,0 +1,88 @@
+package ru.wqkcpf.launcher;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+
+public final class UiTheme {
+    public static final Color BG = new Color(13, 17, 23);
+    public static final Color CARD = new Color(22, 27, 34);
+    public static final Color CARD_LIGHT = new Color(31, 38, 49);
+    public static final Color TEXT = new Color(235, 241, 247);
+    public static final Color MUTED = new Color(139, 148, 158);
+    public static final Color BLUE = new Color(58, 134, 255);
+    public static final Color GREEN = new Color(42, 196, 109);
+    public static final Color RED = new Color(240, 80, 80);
+
+    private UiTheme() {
+    }
+
+    public static void applyPanel(JPanel panel) {
+        panel.setBackground(BG);
+    }
+
+    public static void applyCard(JPanel panel) {
+        panel.setBackground(CARD);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(CARD_LIGHT, 1),
+                BorderFactory.createEmptyBorder(18, 18, 18, 18)
+        ));
+    }
+
+    public static JLabel title(String text, int size) {
+        JLabel label = new JLabel(text);
+        label.setForeground(TEXT);
+        label.setFont(new Font("Segoe UI", Font.BOLD, size));
+        return label;
+    }
+
+    public static JLabel muted(String text) {
+        JLabel label = new JLabel(text);
+        label.setForeground(MUTED);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        return label;
+    }
+
+    public static void styleField(JTextField field) {
+        field.setBackground(new Color(9, 12, 18));
+        field.setForeground(TEXT);
+        field.setCaretColor(TEXT);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(CARD_LIGHT, 1),
+                BorderFactory.createEmptyBorder(9, 10, 9, 10)
+        ));
+    }
+
+    public static void primaryButton(JButton button) {
+        styleButton(button, BLUE, Color.WHITE);
+    }
+
+    public static void greenButton(JButton button) {
+        styleButton(button, GREEN, Color.WHITE);
+    }
+
+    public static void ghostButton(JButton button) {
+        styleButton(button, CARD_LIGHT, TEXT);
+    }
+
+    private static void styleButton(JButton button, Color background, Color foreground) {
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setBackground(background);
+        button.setForeground(foreground);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
+    }
+
+    public static void pad(JComponent component, int top, int left, int bottom, int right) {
+        component.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
+    }
+}

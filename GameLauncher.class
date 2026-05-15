@@ -1,0 +1,85 @@
+package ru.wqkcpf.launcher;
+
+public final class LauncherSettings {
+    private String username;
+    private String javaPath;
+    private String clientJarPath;
+    private String gameDirectory;
+    private String ramMb;
+    private String serverIp;
+    private String extraArgs;
+
+    public LauncherSettings() {
+        this.username = "Player";
+        this.javaPath = "java";
+        this.clientJarPath = "";
+        this.gameDirectory = System.getProperty("user.home");
+        this.ramMb = "2048";
+        this.serverIp = "";
+        this.extraArgs = "";
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = clean(username, "Player");
+    }
+
+    public String getJavaPath() {
+        return javaPath;
+    }
+
+    public void setJavaPath(String javaPath) {
+        this.javaPath = clean(javaPath, "java");
+    }
+
+    public String getClientJarPath() {
+        return clientJarPath;
+    }
+
+    public void setClientJarPath(String clientJarPath) {
+        this.clientJarPath = clean(clientJarPath, "");
+    }
+
+    public String getGameDirectory() {
+        return gameDirectory;
+    }
+
+    public void setGameDirectory(String gameDirectory) {
+        this.gameDirectory = clean(gameDirectory, System.getProperty("user.home"));
+    }
+
+    public String getRamMb() {
+        return ramMb;
+    }
+
+    public void setRamMb(String ramMb) {
+        this.ramMb = clean(ramMb, "2048");
+    }
+
+    public String getServerIp() {
+        return serverIp;
+    }
+
+    public void setServerIp(String serverIp) {
+        this.serverIp = clean(serverIp, "");
+    }
+
+    public String getExtraArgs() {
+        return extraArgs;
+    }
+
+    public void setExtraArgs(String extraArgs) {
+        this.extraArgs = clean(extraArgs, "");
+    }
+
+    private static String clean(String value, String fallback) {
+        if (value == null) {
+            return fallback;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? fallback : trimmed;
+    }
+}

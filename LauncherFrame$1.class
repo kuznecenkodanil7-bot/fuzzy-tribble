@@ -1,0 +1,99 @@
+package ru.wqkcpf.launcher;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class GameLauncher {
+    public Process start(LauncherSettings settings) throws IOException {
+        validate(settings);
+
+        List<String> command = buildCommand(settings);
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.directory(new File(settings.getGameDirectory()));
+        processBuilder.redirectErrorStream(true);
+        return processBuilder.start();
+    }
+
+    public List<String> buildCommand(LauncherSettings settings) {
+        List<String> command = new ArrayList<>();
+        command.add(settings.getJavaPath());
+        command.add("-Xms512M");
+        command.add("-Xmx" + settings.getRamMb() + "M");
+        command.add("-Dfile.encoding=UTF-8");
+        command.add("-jar");
+        command.add(settings.getClientJarPath());
+
+        if (!settings.getUsername().isBlank()) {
+            command.add("--username");
+            command.add(settings.getUsername());
+        }
+
+        if (!settings.getServerIp().isBlank()) {
+            command.add("--server");
+            command.add(settings.getServerIp());
+        }
+
+        command.addAll(splitArgs(settings.getExtraArgs()));
+        return command;
+    }
+
+    private void validate(LauncherSettings settings) throws IOException {
+        if (!settings.getRamMb().matches("\\d+")) {
+            throw new IOException("RAM должен быть числом в мегабайтах, например 2048.");
+        }
+
+        int ram = Integer.parseInt(settings.getRamMb());
+        if (ram < 512 || ram > 32768) {
+            throw new IOException("RAM должен быть в диапазоне от 512 до 32768 МБ.");
+        }
+
+        Path jarPath = Path.of(settings.getClientJarPath());
+        if (!Files.exists(jarPath) || !Files.isRegularFile(jarPath)) {
+            throw new IOException("Не найден client .jar. Укажи путь к .jar-файлу клиента.");
+        }
+
+        Path gameDir = Path.of(settings.getGameDirectory());
+        if (!Files.exists(gameDir)) {
+            Files.createDirectories(gameDir);
+        }
+        if (!Files.isDirectory(gameDir)) {
+            throw new IOException("Папка игры указана неверно.");
+        }
+    }
+
+    private List<String> splitArgs(String raw) {
+        List<String> result = new ArrayList<>();
+        if (raw == null || raw.isBlank()) {
+            return result;
+        }
+
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int i = 0; i < raw.length(); i++) {
+            char ch = raw.charAt(i);
+            if (ch == '"') {
+                inQuotes = !inQuotes;
+                continue;
+            }
+            if (Character.isWhitespace(ch) && !inQuotes) {
+                if (!current.isEmpty()) {
+                    result.add(current.toString());
+                    current.setLength(0);
+                }
+            } else {
+                current.append(ch);
+            }
+        }
+
+        if (!current.isEmpty()) {
+            result.add(current.toString());
+        }
+
+        return result;
+    }
+}
